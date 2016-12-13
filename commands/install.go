@@ -50,4 +50,5 @@ func Install() {
 func processShadow(name string, template string) {
 
 	fmt.Println("Processing template " + name + " from: " + template)
+	// Copy the template to the global location.
 }

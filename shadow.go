@@ -4,7 +4,12 @@ import (
 	"os"
 	"fmt"
 	"dao/shadow/commands"
+	"gopkg.in/ini.v1"
 )
+
+func init() {
+	config();
+}
 
 func main() {
 
@@ -66,16 +71,19 @@ func tryCommand() {
 
 func config() {
 
+
 	// Get local configuration file.
 	// Get global configuration file.
 	// Merge, prioritising
 
-	//cfg, err = ini.LooseLoad("conf/default.conf", "conf/" + env + ".conf")
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//	os.Exit(1)
-	//}
-	//
+	cfg, err := ini.LooseLoad(".shadow")
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Println(cfg.)
+
 	//f, _ := os.Create("conf/goaway.conf")
 	//cfg.WriteTo(f)
 }
