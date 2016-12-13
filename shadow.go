@@ -4,14 +4,21 @@ import (
 	"os"
 	"fmt"
 	"dao/shadow/commands"
-	"gopkg.in/ini.v1"
+	"dao/shadow/config"
 )
 
+// Declare global config.
+var Cfg *config.Config
+
+// Initial functionality and setup.
 func init() {
-	config();
+
+	Setup();
 }
 
+// The main stuff!
 func main() {
+
 
 	// Check an argument exists.
 	if(len(os.Args) > 1 && os.Args != nil) {
@@ -30,36 +37,34 @@ func main() {
 // Run the command, if exists.
 func tryCommand() {
 
+	// Pass config to commands package.
+	commands.Setup(Cfg)
+
 	// Check for download param
 	switch os.Args[1] {
 
 		// Installs a template file as a name globally.
 		case "install":
-
 			commands.Install()
 			break
 
 		// Uninstalls a global template file.
 		case "uninstall":
-
 			commands.Uninstall()
 			break
 
 		// Handles updates (itself & templates).
 		case "update":
-
 			commands.Update()
 			break
 
 		// Rollback to a previous version.
 		case "rollback":
-
 			commands.Rollback()
 			break
 
 		// Create file from a shadow template.
 		case "create":
-
 			commands.Create()
 			break
 
@@ -68,21 +73,23 @@ func tryCommand() {
 	}
 }
 
+// Set up configs.
+func Setup() {
 
-func config() {
-
+	// Create instance of config.
+	Cfg = config.NewConfig()
 
 	// Get local configuration file.
 	// Get global configuration file.
 	// Merge, prioritising
 
-	cfg, err := ini.LooseLoad(".shadow")
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-
-	fmt.Println(cfg.)
+	//cfg, err := ini.LooseLoad(".shadow")
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//	os.Exit(1)
+	//}
+	//
+	//fmt.Println(cfg)
 
 	//f, _ := os.Create("conf/goaway.conf")
 	//cfg.WriteTo(f)
