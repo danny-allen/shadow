@@ -13,6 +13,12 @@ type Config struct {
 	ShadowFile 		*ini.File
 }
 
+var localShadow *ini.File
+
+func init() {
+	localShadow = ini.Empty()
+}
+
 func NewConfig() *Config {
 
 	// Get the config struct values.
@@ -38,9 +44,11 @@ func GetShadowFile() *ini.File {
 	*/
 
 	// Load the local shadow file, worry about global later.
-	localShadow, err := ini.Load(".shadow")
+	file, err := ini.Load(".shadow")
 
-	localShadow.
+	localShadow = file
+
+	//localShadow.
 
 	// Panic on error.
 	if(err != nil){
