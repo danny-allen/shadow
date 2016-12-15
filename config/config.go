@@ -2,9 +2,8 @@ package config
 
 import (
 	"gopkg.in/ini.v1"
-	"fmt"
 	"os"
-	"log"
+	"dao/shadow/path"
 )
 
 // Config data structure.
@@ -43,16 +42,25 @@ func GetShadowFile() *ini.File {
 		config := conf.Merge(global, local)
 	*/
 
-	// Load the local shadow file, worry about global later.
-	file, err := ini.Load(".shadow")
+	// Default localShadow value.
+	localShadow = nil
 
-	localShadow = file
+	// Check show file exists.
+	file, _ := path.Exists(".shadow")
 
-	//localShadow.
+	// If there is a file.
+	if(file) {
 
-	// Panic on error.
-	if(err != nil){
-		panic(err);
+		// Load the local shadow file, worry about global later.
+		file, err := ini.Load(".shadow")
+
+		//localShadow.
+		localShadow = file
+
+		// Panic on error.
+		if(err != nil){
+			panic(err);
+		}
 	}
 
 	// Return the local shadow file.
@@ -67,24 +75,6 @@ func GetCurrentPath() string {
 
 	return currentPath
 }
-
-func Local(file string) {
-
-}
-
-// Loads a config file.
-func Load(path string) *ini.File{
-
-	file, err := ini.Load(path)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatal(err)
-	}
-
-	return file
-}
-
 
 // Loop configs.
 // If first config, add to base.

@@ -5,6 +5,13 @@ import (
 	"fmt"
 	"dao/shadow/commands"
 	"dao/shadow/config"
+	"dao/shadow/commands/init"
+	"dao/shadow/commands/install"
+	"dao/shadow/commands/uninstall"
+	"dao/shadow/commands/update"
+	"dao/shadow/commands/rollback"
+	"dao/shadow/commands/create"
+	"dao/shadow/commands/list"
 )
 
 // Declare global config.
@@ -43,29 +50,39 @@ func tryCommand() {
 	// Check for download param
 	switch os.Args[1] {
 
+		// Create a .shadow file.
+		case "init":
+			initialize.Run(Cfg)
+			break
+
 		// Installs a template file as a name globally.
 		case "install":
-			commands.Install()
+			install.Run(Cfg)
 			break
 
 		// Uninstalls a global template file.
 		case "uninstall":
-			commands.Uninstall()
+			uninstall.Run(Cfg)
 			break
 
 		// Handles updates (itself & templates).
 		case "update":
-			commands.Update()
+			update.Run(Cfg)
 			break
 
 		// Rollback to a previous version.
 		case "rollback":
-			commands.Rollback()
+			rollback.Run(Cfg)
 			break
 
 		// Create file from a shadow template.
 		case "create":
-			commands.Create()
+			create.Run(Cfg)
+			break
+
+		// Create file from a shadow template.
+		case "list":
+			list.Run(Cfg)
 			break
 
 		default:

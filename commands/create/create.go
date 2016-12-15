@@ -1,21 +1,23 @@
-package commands
+package create
 
 import (
 	"os"
 	"fmt"
 	"github.com/jessevdk/go-flags"
-	"gopkg.in/ini.v1"
+	"dao/shadow/config"
+	"dao/shadow/template"
+	"dao/shadow/commands/list"
 )
 
-
-// Declare install options.
+// Install options/flags.
 var createOpts struct {
 
 	// Name (-n, --name).
 	Name string `short:"n" long:"name" description:"The filename without the extension." required:"true"`
 }
 
-func Create() {
+// Run the install command.
+func Run(Cfg *config.Config) {
 
 	// Check for file/directory.
 	if(len(os.Args) < 3) {
@@ -32,24 +34,24 @@ func Create() {
 		os.Exit(1)
 	}
 
-	// Create the template data.
-	templateData := &TemplateData{
-		Type: os.Args[2],
-	}
 
-	// Get the section.
-	section := GetSectionFromShadowFile(templateData)
+	_, err = template.GetTemplateByType(Cfg, os.Args[2])
 
 	// If no section found.
-	if(section == nil) {
+	if(err != nil) {
 
 		// Show the user what is available.
-		OutputInstalledTemplateNames()
+		list.Run(Cfg)
 
 	} else {
 
 		// Make the file from template.
-		section.GetKey()
+		fmt.Println("Creating " + os.Args[2] + " template " + createOpts.Name + "...")
+
+		//fmt.Println(templateData)
+
+		// Save the new file.
+		//fmt.Println("Saving to " + section.Key("dest").String() + ".")
 	}
 
 	/*
@@ -65,41 +67,4 @@ func Create() {
 		- Missing dest means use working directory.
 		- Missing filename template means {{name}}.{{file-extension-of-template}}
 	*/
-}
-
-// Output to cli, all the installed template names!
-func OutputInstalledTemplateNames() {
-
-	// Tell user.
-	fmt.Println("Shadow needs a template type that is installed.")
-	fmt.Println("The available templates are:")
-
-	// Get the installed template names.
-	names := Cfg.ShadowFile.SectionStrings()
-
-	// Loop names.
-	for _, v := range names {
-
-		// If not default.
-
-		if(v != "DEFAULT"){
-
-			// Output name.
-			fmt.Println("\t" + v);
-		}
-	}
-}
-
-// Returns the section as stored in the templateData.Type param.
-func GetSectionFromShadowFile(templateData *TemplateData) (*ini.Section) {
-
-	// Find section.
-	section, _ := Cfg.ShadowFile.GetSection(templateData.Type)
-
-	return section;
-}
-
-
-func GetAvailableTemplateTypes() {
-
 }

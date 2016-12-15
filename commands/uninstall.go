@@ -1,6 +1,0 @@
-package commands
-
-
-func Uninstall() {
-
-}

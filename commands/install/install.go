@@ -1,20 +1,14 @@
-package commands
+package install
 
 import (
 	"os"
 	"fmt"
 	"dao/shadow/path"
 	"github.com/jessevdk/go-flags"
+	"dao/shadow/config"
+	"dao/shadow/template"
 )
 
-
-// Data structure for a template.
-type TemplateData struct {
-	Type 		string
-	Src 		string
-	Dest 		string
-	Filename	string
-}
 
 // Declare install options.
 var installOpts struct {
@@ -27,7 +21,7 @@ var installOpts struct {
 }
 
 // Install a template
-func Install() {
+func Run(Cfg *config.Config) {
 
 	// Check for file/directory.
 	if(len(os.Args) < 3) {
@@ -42,15 +36,15 @@ func Install() {
 	}
 
 	// Get args.
-	template := os.Args[2]
+	templatePath := os.Args[2]
 	templateType := os.Args[3]
 
 	// Find existence of the template file or directory exists.
-	exists, err := path.Exists(Cfg.CurrentPath + "/" + template)
+	exists, err := path.Exists(Cfg.CurrentPath + "/" + templatePath)
 
 	// Process template or catch error.
 	if(exists && err == nil) {
-		r, _ := processTemplate(templateType, Cfg.CurrentPath + "/" + template)
+		r, _ := processTemplate(templateType, Cfg.CurrentPath + "/" + templatePath)
 
 		// If the templates was successfully moved.
 		if(r) {
@@ -65,23 +59,23 @@ func Install() {
 			}
 
 			// Create the template data
-			templateData := &TemplateData{
+			template := &template.Model{
 				Type: templateType,
-				Src: template,
+				Src: templatePath,
 			}
 
 			// Check for filename flag.
 			if(installOpts.Filename != "") {
-				templateData.Filename = installOpts.Filename
+				template.Filename = installOpts.Filename
 			}
 
 			// Check for dest flag.
 			if(installOpts.Dest != "") {
-				templateData.Dest = installOpts.Dest
+				template.Dest = installOpts.Dest
 			}
 
 			// Add to the shadow file.
-			AddToShadowFile(templateData);
+			AddToShadowFile(Cfg, template);
 		}
 	} else {
 		fmt.Println(err.Error());
@@ -108,12 +102,12 @@ func processTemplate(templateType string, template string) (bool, error) {
 		* Add flags/opts to allow adding of dest and filename.
 		* Differentiate between section name and filename. (type and name)
  */
-func AddToShadowFile(templateData *TemplateData) {
+func AddToShadowFile(Cfg *config.Config, templateData *template.Model) {
 
 	// Find section.
 	section, _ := Cfg.ShadowFile.GetSection(templateData.Type)
 
-	// Check for section.
+	// Check for section.t
 	if(section == nil) {
 
 		// Create new section.
