@@ -8,11 +8,13 @@ import (
 
 // Config data structure.
 type Config struct {
-	CurrentPath 	string
-	ShadowFile 		*ini.File
+	CurrentPath 		string
+	ShadowFile 			*ini.File
+	UpdateLogPath		string
 }
 
 var localShadow *ini.File
+var downloadUrl	string
 
 func init() {
 	localShadow = ini.Empty()
@@ -28,6 +30,7 @@ func NewConfig() *Config {
 	conf := &Config{
 		CurrentPath: currentPath,
 		ShadowFile: shadowFile,
+		UpdateLogPath: "http://prj.noise-maker.co.uk/shadow",
 	}
 
 	// Return the config.
