@@ -1,0 +1,6 @@
+package: dao/shadow
+import:
+- package: github.com/inconshreveable/go-update
+- package: github.com/jessevdk/go-flags
+- package: gopkg.in/ini.v1
+- package: gopkg.in/yaml.v2

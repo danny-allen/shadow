@@ -1,0 +1,15 @@
+hash: 56eb0c5f7eae695618a50ad9ad8ee2d2b76133c749520ebedeed5b12c582c576
+updated: 2016-12-17T20:32:29.364019856Z
+imports:
+- name: github.com/inconshreveable/go-update
+  version: 8152e7eb6ccf8679a64582a66b78519688d156ad
+  subpackages:
+  - internal/binarydist
+  - internal/osext
+- name: github.com/jessevdk/go-flags
+  version: 4e64e4a4e2552194cf594243e23aa9baf3b4297e
+- name: gopkg.in/ini.v1
+  version: 6e4869b434bd001f6983749881c7ead3545887d8
+- name: gopkg.in/yaml.v2
+  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
+testImports: []
