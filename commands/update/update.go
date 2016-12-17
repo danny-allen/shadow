@@ -56,9 +56,17 @@ func Run(Cfg *config.Config) {
 	data := out.String()
 
 	UpdateLogs := []UpdateLog{}
+	fmt.Println(data)
 
 	err := yaml.Unmarshal([]byte(data), &UpdateLogs)
 
+	if(err != nil) {
+		panic(err);
+	}
+
+	for _, v := range UpdateLogs {
+		fmt.Println(v.Version + ": " + v.Filename)
+	}
 
 	found := false
 
