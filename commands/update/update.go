@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/inconshreveable/go-update"
+	"dao/interrogator"
 )
 
 func Run(Cfg *config.Config) {
@@ -37,14 +38,37 @@ func Run(Cfg *config.Config) {
 	// You are already up to date.
 
 	// Get the latest version of the app.
-	version, _ := Cfg.Version.GetLatest()
+	latest := Cfg.Version.GetLatest()
+	current := Cfg.Version.GetCurrent()
 
-	fmt.Println(version.Tag)
+	// Check if the current version is the latest.
+	if (latest.Tag != current.Tag) {
 
+		// Declare question.
+		q := interrogator.Question{
+			Content: "You are currently using " + current.Tag + ". Would you like to upgrade to " + latest.Tag + "? [y/n]",
+		}
 
-	found := false
+		// Declare answers.
+		answers := map[string][]string{}
 
-	if(found) {
+		// Define answers.
+		answers["yes"] = []string{"yes", "y"}
+		answers["no"] = []string{"no", "n"}
+
+		// Ask question.
+		q = q.Ask(q)
+		q = q.Answers(q, answers)
+
+		// On yes response.
+		if(q.Response(q, "yes")) {
+			fmt.Println("YES!")
+		}
+
+		// On no response.
+		if(q.Response(q, "no")) {
+			fmt.Println("Nope!")
+		}
 
 	} else {
 		fmt.Println("You are already up to date.")

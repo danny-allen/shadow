@@ -4,7 +4,7 @@ import (
 	"gopkg.in/ini.v1"
 	"os"
 	"dao/shadow/path"
-	"dao/shadow/version"
+	"dao/version"
 )
 
 // Config data structure.

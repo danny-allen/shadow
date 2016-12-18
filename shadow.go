@@ -12,7 +12,7 @@ import (
 	"dao/shadow/commands/rollback"
 	"dao/shadow/commands/create"
 	"dao/shadow/commands/list"
-	"dao/shadow/version"
+	"dao/version"
 )
 
 // Declare global config.
@@ -24,7 +24,7 @@ func init() {
 	Setup();
 }
 
-var tag = "undefined"
+var tag = "v0.0.1"
 
 
 //go build -i -v -ldflags="-X main.version=$(git describe --tags)" shadow.go
