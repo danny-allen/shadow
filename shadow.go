@@ -12,6 +12,7 @@ import (
 	"dao/shadow/commands/rollback"
 	"dao/shadow/commands/create"
 	"dao/shadow/commands/list"
+	"dao/shadow/version"
 )
 
 // Declare global config.
@@ -22,6 +23,12 @@ func init() {
 
 	Setup();
 }
+
+var tag = "undefined"
+
+
+//go build -i -v -ldflags="-X main.version=$(git describe --tags)" shadow.go
+
 
 // The main stuff!
 func main() {
@@ -95,6 +102,16 @@ func Setup() {
 
 	// Create instance of config.
 	Cfg = config.NewConfig()
+
+	// Create new instance of version data.
+	Cfg.Version = &version.Version{}
+
+	// Set the version tag.
+	Cfg.Version.SetTag(tag)
+
+	// Set the URL for the version log.
+	Cfg.Version.SetLogUrl("https://raw.githubusercontent.com/danny-allen/shadow/master/shadow_history.yaml")
+
 
 	// Get local configuration file.
 	// Get global configuration file.

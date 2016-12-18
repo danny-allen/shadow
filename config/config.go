@@ -4,6 +4,7 @@ import (
 	"gopkg.in/ini.v1"
 	"os"
 	"dao/shadow/path"
+	"dao/shadow/version"
 )
 
 // Config data structure.
@@ -11,6 +12,7 @@ type Config struct {
 	CurrentPath 		string
 	ShadowFile 			*ini.File
 	UpdateLogPath		string
+	Version 			*version.Version
 }
 
 var localShadow *ini.File

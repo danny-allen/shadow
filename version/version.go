@@ -5,17 +5,39 @@ import (
 	"io"
 	"gopkg.in/yaml.v2"
 	"net/http"
+	"os"
+	"fmt"
 )
 
-// Version log struct.
-type LogItem struct {
-	Tag		  	string	`yaml:"tag"`
-	Filename 	string	`yaml:"filename"`
+var logUrl string = ""
+
+// Set the log url.
+func (v Version) SetLogUrl(l string) {
+	logUrl = l
 }
 
-// Create an array of log items.
-var Log = []LogItem{}
+// Store the current tag.
+func (v Version) SetTag(tag string) {
+	v.tag = tag
+}
 
+// Get the current tag.
+func (v Version) GetTag(tag string) string {
+	return v.tag
+}
+
+// Get the latest version of the app.
+func (v Version) GetLatest() (LogItem, error) {
+
+	// Get log data, if needed.
+	log := getLogData()
+
+	// Get the number of log items.
+	logCount := len(log)
+
+	// Return the last log.
+	return log[(logCount-1)], nil
+}
 
 // Get the data for the log.
 func getLogData() []LogItem {
@@ -25,8 +47,14 @@ func getLogData() []LogItem {
 		return Log
 	}
 
+	// Check there is an update URL.
+	if(logUrl == "") {
+		fmt.Println("You must set an update log URL.")
+		os.Exit(0)
+	}
+
 	// Get the updates log.
-	resp, _ := http.Get("https://raw.githubusercontent.com/danny-allen/shadow/master/shadow_history.yaml")
+	resp, _ := http.Get(logUrl)
 	defer resp.Body.Close()
 
 	// Get the result as string.
@@ -39,7 +67,7 @@ func getLogData() []LogItem {
 
 	// Check for error on unmarshalling.
 	if(err != nil) {
-		panic(err);
+		panic(err)
 	}
 
 	// Return the log.
@@ -55,20 +83,4 @@ func logExists() bool {
 	} else {
 		return false
 	}
-}
-
-
-
-
-// Get the latest version of the app.
-func LatestVersion() (LogItem, error) {
-
-	// Get log data, if needed.
-	log := getLogData()
-
-	// Get the number of log items.
-	logCount := len(log)
-
-	// Return the last log.
-	return log[(logCount-1)], nil
 }

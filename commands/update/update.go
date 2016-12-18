@@ -11,16 +11,8 @@ import (
 	"dao/shadow/config"
 	"fmt"
 	"net/http"
-	"io"
-	"bytes"
 	"github.com/inconshreveable/go-update"
-	"gopkg.in/yaml.v2"
 )
-
-type UpdateLog struct {
-	Version  	string	`yaml:"version"`
-	Filename 	string	`yaml:"filename"`
-}
 
 func Run(Cfg *config.Config) {
 
@@ -44,29 +36,11 @@ func Run(Cfg *config.Config) {
 	// If not:
 	// You are already up to date.
 
+	// Get the latest version of the app.
+	version, _ := Cfg.Version.GetLatest()
 
-	// Get the updates log.
-	//resp, err := http.Get(Cfg.UpdateLogPath + "/shadow-updates.log")
-	resp, _ := http.Get("https://raw.githubusercontent.com/danny-allen/shadow/master/shadow_history.yaml")
-	defer resp.Body.Close()
+	fmt.Println(version.Tag)
 
-	// Get the result as string.
-	out := bytes.Buffer{}
-	io.Copy(&out, resp.Body)
-	data := out.String()
-
-	UpdateLogs := []UpdateLog{}
-	fmt.Println(data)
-
-	err := yaml.Unmarshal([]byte(data), &UpdateLogs)
-
-	if(err != nil) {
-		panic(err);
-	}
-
-	for _, v := range UpdateLogs {
-		fmt.Println(v.Version + ": " + v.Filename)
-	}
 
 	found := false
 
