@@ -67,7 +67,7 @@ func Run(Cfg *config.Config) {
 
 		// On no response.
 		if(q.Response(q, "no")) {
-			fmt.Println("Nope!")
+			fmt.Println("Okay, but do check the latest updates, you may be missing something awesome!")
 		}
 
 	} else {
