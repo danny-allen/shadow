@@ -44,30 +44,26 @@ func Run(Cfg *config.Config) {
 	// Check if the current version is the latest.
 	if (latest.Tag != current.Tag) {
 
-		// Declare question.
-		q := interrogator.Question{
-			Content: "You are currently using " + current.Tag + ". Would you like to upgrade to " + latest.Tag + "? [y/n]",
-		}
-
-		// Declare answers.
-		answers := map[string][]string{}
+		// Create question.
+		q := interrogator.NewQuestion(
+			"You are currently using " + current.Tag + ". Would you like to upgrade to " + latest.Tag + "? [y/n]",
+		)
 
 		// Define answers.
-		answers["yes"] = []string{"yes", "y"}
-		answers["no"] = []string{"no", "n"}
+		q.SetAnswer("yes", []string{"yes", "y"})
+		q.SetAnswer("no", []string{"no", "n"})
 
 		// Ask question.
-		q = q.Ask(q)
-		q = q.Answers(q, answers)
+		q.Ask()
 
 		// On yes response.
-		if(q.Response(q, "yes")) {
+		if(q.IsResponse("yes")) {
 			fmt.Println("YES!")
 		}
 
 		// On no response.
-		if(q.Response(q, "no")) {
-			fmt.Println("Okay, but do check the latest updates, you may be missing something awesome!")
+		if(q.IsResponse("no")) {
+			fmt.Println("Nope!")
 		}
 
 	} else {
