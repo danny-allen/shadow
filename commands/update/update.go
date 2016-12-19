@@ -58,12 +58,12 @@ func Run(Cfg *config.Config) {
 
 		// On yes response.
 		if(q.IsResponse("yes")) {
-			fmt.Println("YES!")
+			fmt.Println("Starting update...")
 		}
 
 		// On no response.
 		if(q.IsResponse("no")) {
-			fmt.Println("Nope!")
+			fmt.Println("Okay, but you may be missing out on some cool features!")
 		}
 
 	} else {
