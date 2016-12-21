@@ -103,6 +103,16 @@ func Setup() {
 	// Create instance of config.
 	Cfg = config.NewConfig()
 
+	/*
+		// Version.
+		ver := version.NewLog()
+		ver.Populate("https://raw.githubusercontent.com/danny-allen/shadow/master/shadow_history.yaml")
+		Cfg.Version = ver
+
+
+
+	 */
+
 	// Create new instance of version data.
 	Cfg.Version = &version.Version{}
 
