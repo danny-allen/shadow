@@ -56,7 +56,10 @@ func Run(Cfg *config.Config) {
 
 	// Check it saved.
 	if(saveErr != nil){
+
+		// Save did not work for some reason.
 		fmt.Println("Something went wrong saving the file.")
+
 	} else {
 
 		// Deleted.
