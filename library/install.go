@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"dao/shadow/path"
 	"github.com/jessevdk/go-flags"
-	"dao/interrogator"
-	"dao/fail"
+	"github.com/danny-allen/go-interrogator"
+	"github.com/danny-allen/go-stop"
 )
 
 
-// Declare install options.
+/**
+ * Install options available for command line.
+ */
 var installOpts struct {
 
 	// Filename (-f, --filename).
@@ -20,19 +22,26 @@ var installOpts struct {
 	Dest string `short:"d" long:"destination"  description:"The default destination directory for using the template."`
 }
 
+/**
+ * Make sure the user has specified a template path.
+ */
 func GetTemplatePath() string {
 
 	// Check for file/directory.
 	if(len(os.Args) < 3) {
 
 		// User error, not enough args.
-		fail.Mistake("Shadow install must have a file or directory to work with.\nTry: shadow install <file/directory> <name>")
+		stop.Mistake("Shadow install must have a file or directory to work with.\nTry: shadow install [file/directory]")
 	}
 
 	// Get args.
 	return os.Args[2]
 }
 
+
+/**
+ * Make sure the user has specified a template type. Asks them if not.
+ */
 func GetTemplateType() string {
 
 	// Declare template type as a string.
@@ -58,13 +67,15 @@ func GetTemplateType() string {
 
 	// Check template type now exists!
 	if(templateType == "") {
-		fail.Mistake("You must declare the type, it cannot be blank.\nAborting.")
+		stop.Mistake("You must declare the type, it cannot be blank.\nAborting.")
 	}
 
 	return templateType
 }
 
-// Install a template
+/**
+ * Runs the install functionality attemping to install a template from a source.
+ */
 func Install(Cfg *Config) {
 
 	// Get params.
@@ -114,7 +125,9 @@ func Install(Cfg *Config) {
 	}
 }
 
-// Process the template.
+/**
+ * Process the template.
+ */
 func processTemplate(templateType string, template string) (bool, error) {
 
 	fmt.Println("Processing template type " + templateType + " from: " + template)
@@ -133,6 +146,11 @@ func processTemplate(templateType string, template string) (bool, error) {
 	 	* Check values of data added to shadow file.
 		* Add flags/opts to allow adding of dest and filename.
 		* Differentiate between section name and filename. (type and name)
+ */
+
+
+/**
+ * Add the template data to the shadow file.
  */
 func AddToShadowFile(Cfg *Config, templateData *Model) {
 
@@ -164,7 +182,7 @@ func AddToShadowFile(Cfg *Config, templateData *Model) {
 	} else {
 
 		// Section already exists.
-		fail.Mistake(templateData.Type + " already exists in your shadow file.")
+		stop.Mistake(templateData.Type + " already exists in your shadow file.")
 	}
 
 }
