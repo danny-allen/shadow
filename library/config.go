@@ -1,11 +1,15 @@
-package config
+package library
 
 import (
-	"gopkg.in/ini.v1"
-	"os"
-	"dao/shadow/path"
 	"dao/version"
+	"os"
+	"gopkg.in/ini.v1"
+	"dao/shadow/path"
 )
+
+
+var Cfg *Config
+
 
 // Config data structure.
 type Config struct {
@@ -17,6 +21,56 @@ type Config struct {
 
 var localShadow *ini.File
 var downloadUrl	string
+
+
+
+// Set up configs.
+func Setup() {
+
+	// Create instance of config.
+	Cfg = NewConfig()
+
+	/*
+		// Version.
+		ver := version.NewLog()
+		ver.Populate("https://raw.githubusercontent.com/danny-allen/shadow/master/shadow_history.yaml")
+		Cfg.Version = ver
+
+
+
+	 */
+
+	// Create new instance of version data.
+	Cfg.Version = &version.Version{}
+
+	tag := "v0.0.2"
+
+	// Set the version tag.
+	Cfg.Version.SetTag(tag)
+
+	// Set the URL for the version log.
+	Cfg.Version.SetLogUrl("https://raw.githubusercontent.com/danny-allen/shadow/master/shadow_history.yaml")
+
+
+	// Get local configuration file.
+	// Get global configuration file.
+	// Merge, prioritising
+
+	//cfg, err := ini.LooseLoad(".shadow")
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//	os.Exit(1)
+	//}
+	//
+	//fmt.Println(cfg)
+
+	//f, _ := os.Create("conf/goaway.conf")
+	//cfg.WriteTo(f)
+}
+
+
+
+
 
 func init() {
 	localShadow = ini.Empty()
@@ -95,22 +149,21 @@ func (c Config) GetByKey(key string) {
 // Merges two configs.
 func Merge(configs ...map[string]*ini.Section) {
 
-	//result := map[string]string{}
-	//
-	//for i, v := range configs {
-	//
-	//	// First Config
-	//	if(i == 0) {
-	//
-	//		// Just set it, we wan't everything.
-	//		result = v
-	//
-	//	} else {
-	//
-	//		// Loop the config properties and persist them.
-	//		for confKey, confValue := range v {
-	//			result[confKey] = confValue
-	//		}
-	//	}
-	//}
+//result := map[string]string{}
+//
+//for i, v := range configs {
+//
+//	// First Config
+//	if(i == 0) {
+//
+//		// Just set it, we wan't everything.
+//		result = v
+//
+//	} else {
+//
+//		// Loop the config properties and persist them.
+//		for confKey, confValue := range v {
+//			result[confKey] = confValue
+//		}
+//	}
 }

@@ -1,11 +1,10 @@
-package list
+package library
 
 import (
 	"fmt"
-	"dao/shadow/config"
 )
 
-func Run(Cfg *config.Config) {
+func List(Cfg *Config) {
 
 	// Tell user.
 	fmt.Println("Shadow needs a template type that is installed.")

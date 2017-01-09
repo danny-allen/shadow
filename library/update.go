@@ -1,4 +1,4 @@
-package update
+package library
 
 /**
  	Info on releasing binaries: http://softwareengineering.stackexchange.com/a/151870
@@ -8,14 +8,13 @@ package update
  	- Deploy binary and a list of the history of versions. Readable by the binary.
  */
 import (
-	"dao/shadow/config"
 	"fmt"
 	"net/http"
 	"github.com/inconshreveable/go-update"
 	"dao/interrogator"
 )
 
-func Run(Cfg *config.Config) {
+func Update(Cfg *Config) {
 
 	// dist
 	// New app version is ready.

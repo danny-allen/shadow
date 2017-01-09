@@ -1,12 +1,9 @@
-package create
+package library
 
 import (
 	"os"
 	"fmt"
 	"github.com/jessevdk/go-flags"
-	"dao/shadow/config"
-	"dao/shadow/template"
-	"dao/shadow/commands/list"
 )
 
 // Install options/flags.
@@ -16,8 +13,8 @@ var createOpts struct {
 	Name string `short:"n" long:"name" description:"The filename without the extension." required:"true"`
 }
 
-// Run the install command.
-func Run(Cfg *config.Config) {
+// Run the create command.
+func Create(Cfg *Config) {
 
 	// Check for file/directory.
 	if(len(os.Args) < 3) {
@@ -35,13 +32,13 @@ func Run(Cfg *config.Config) {
 	}
 
 
-	_, err = template.GetTemplateByType(Cfg, os.Args[2])
+	_, err = GetTemplateByType(Cfg, os.Args[2])
 
 	// If no section found.
 	if(err != nil) {
 
 		// Show the user what is available.
-		list.Run(Cfg)
+		List(Cfg)
 
 	} else {
 

@@ -3,25 +3,16 @@ package main
 import (
 	"os"
 	"fmt"
-	"dao/shadow/commands"
-	"dao/shadow/config"
-	"dao/shadow/commands/init"
-	"dao/shadow/commands/install"
-	"dao/shadow/commands/uninstall"
-	"dao/shadow/commands/update"
-	"dao/shadow/commands/rollback"
-	"dao/shadow/commands/create"
-	"dao/shadow/commands/list"
-	"dao/version"
+	"dao/shadow/library"
 )
 
 // Declare global config.
-var Cfg *config.Config
+var Cfg *library.Config
 
 // Initial functionality and setup.
 func init() {
 
-	Setup();
+	library.Setup();
 }
 
 var tag = "v0.0.1"
@@ -33,9 +24,13 @@ var tag = "v0.0.1"
 // The main stuff!
 func main() {
 
+	fmt.Println("got here")
+
 
 	// Check an argument exists.
 	if(len(os.Args) > 1 && os.Args != nil) {
+
+		fmt.Println("got here")
 
 		// We have a command, lets see if it exists.
 		tryCommand()
@@ -51,94 +46,48 @@ func main() {
 // Run the command, if exists.
 func tryCommand() {
 
-	// Pass config to commands package.
-	commands.Setup(Cfg)
-
 	// Check for download param
 	switch os.Args[1] {
 
 		// Create a .shadow file.
 		case "init":
-			initialize.Run(Cfg)
+			library.Initialize(Cfg)
 			break
 
 		// Installs a template file as a name globally.
 		case "install":
-			install.Run(Cfg)
+			library.Install(Cfg)
 			break
 
 		// Uninstalls a global template file.
 		case "uninstall":
-			uninstall.Run(Cfg)
+			library.Uninstall(Cfg)
 			break
 
 		// Handles updates (itself & templates).
 		case "update":
-			update.Run(Cfg)
+			library.Update(Cfg)
 			break
 
 		// Rollback to a previous version.
 		case "rollback":
-			rollback.Run(Cfg)
+			library.Rollback(Cfg)
 			break
 
 		// Create file from a shadow template.
 		case "create":
-			create.Run(Cfg)
+			library.Create(Cfg)
 			break
 
 		// Create file from a shadow template.
 		case "list":
-			list.Run(Cfg)
+			library.List(Cfg)
 			break
 
 		default:
 			fmt.Println("Shadow command not found.")
 	}
 }
-
-// Set up configs.
-func Setup() {
-
-	// Create instance of config.
-	Cfg = config.NewConfig()
-
-	/*
-		// Version.
-		ver := version.NewLog()
-		ver.Populate("https://raw.githubusercontent.com/danny-allen/shadow/master/shadow_history.yaml")
-		Cfg.Version = ver
-
-
-
-	 */
-
-	// Create new instance of version data.
-	Cfg.Version = &version.Version{}
-
-	// Set the version tag.
-	Cfg.Version.SetTag(tag)
-
-	// Set the URL for the version log.
-	Cfg.Version.SetLogUrl("https://raw.githubusercontent.com/danny-allen/shadow/master/shadow_history.yaml")
-
-
-	// Get local configuration file.
-	// Get global configuration file.
-	// Merge, prioritising
-
-	//cfg, err := ini.LooseLoad(".shadow")
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//	os.Exit(1)
-	//}
-	//
-	//fmt.Println(cfg)
-
-	//f, _ := os.Create("conf/goaway.conf")
-	//cfg.WriteTo(f)
-}
-
 
 
 /*

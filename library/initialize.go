@@ -1,14 +1,13 @@
-package initialize
+package library
 
 import (
 	"dao/shadow/path"
 	"fmt"
 	"os"
-	"dao/shadow/config"
 )
 
 // Create the .shadow file if it doesn't exist already.
-func Run(Cfg *config.Config) {
+func Initialize(Cfg *Config) {
 
 	// Find existence of the template file or directory exists.
 	exists, err := path.Exists(".shadow")

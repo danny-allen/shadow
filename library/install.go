@@ -1,12 +1,12 @@
-package install
+package library
 
 import (
 	"os"
 	"fmt"
 	"dao/shadow/path"
 	"github.com/jessevdk/go-flags"
-	"dao/shadow/config"
-	"dao/shadow/template"
+	"dao/interrogator"
+	"dao/fail"
 )
 
 
@@ -20,24 +20,56 @@ var installOpts struct {
 	Dest string `short:"d" long:"destination"  description:"The default destination directory for using the template."`
 }
 
-// Install a template
-func Run(Cfg *config.Config) {
+func GetTemplatePath() string {
 
 	// Check for file/directory.
 	if(len(os.Args) < 3) {
-		fmt.Println("Shadow install must have a file or directory to work with.")
-		fmt.Println("Try: shadow install <file/directory> <name>")
-	}
 
-	// Check for a name argument.
-	if(len(os.Args) < 4) {
-		fmt.Println("Shadow install must have a name for the file or directory.")
-		fmt.Println("Try: shadow install <file/directory> <name>")
+		// User error, not enough args.
+		fail.Mistake("Shadow install must have a file or directory to work with.\nTry: shadow install <file/directory> <name>")
 	}
 
 	// Get args.
-	templatePath := os.Args[2]
-	templateType := os.Args[3]
+	return os.Args[2]
+}
+
+func GetTemplateType() string {
+
+	// Declare template type as a string.
+	var templateType string
+
+	// Check for a name argument.
+	if(len(os.Args) < 4) {
+
+		// Setup Q.
+		q := interrogator.NewQuestion("What is the type for your new template?")
+
+		// Make it open.
+		q.Open = true
+
+		// Ask the Q.
+		q.Ask()
+
+		// Set the response.
+		templateType = q.Response
+	} else {
+		templateType = os.Args[3]
+	}
+
+	// Check template type now exists!
+	if(templateType == "") {
+		fail.Mistake("You must declare the type, it cannot be blank.\nAborting.")
+	}
+
+	return templateType
+}
+
+// Install a template
+func Install(Cfg *Config) {
+
+	// Get params.
+	templatePath := GetTemplatePath()
+	templateType := GetTemplateType()
 
 	// Find existence of the template file or directory exists.
 	exists, err := path.Exists(Cfg.CurrentPath + "/" + templatePath)
@@ -59,7 +91,7 @@ func Run(Cfg *config.Config) {
 			}
 
 			// Create the template data
-			template := &template.Model{
+			template := &Model{
 				Type: templateType,
 				Src: templatePath,
 			}
@@ -102,7 +134,7 @@ func processTemplate(templateType string, template string) (bool, error) {
 		* Add flags/opts to allow adding of dest and filename.
 		* Differentiate between section name and filename. (type and name)
  */
-func AddToShadowFile(Cfg *config.Config, templateData *template.Model) {
+func AddToShadowFile(Cfg *Config, templateData *Model) {
 
 	// Find section.
 	section, _ := Cfg.ShadowFile.GetSection(templateData.Type)
@@ -132,7 +164,7 @@ func AddToShadowFile(Cfg *config.Config, templateData *template.Model) {
 	} else {
 
 		// Section already exists.
-		fmt.Println(templateData.Type + " already exists in your shadow file.")
+		fail.Mistake(templateData.Type + " already exists in your shadow file.")
 	}
 
 }

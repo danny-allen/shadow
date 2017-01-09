@@ -1,14 +1,24 @@
-package template
+package library
 
 import (
 	"io/ioutil"
 	"text/template"
 	"os"
-	"dao/shadow/config"
 	"fmt"
 )
 
-func GetTemplateByType(Cfg *config.Config, t string) (*Model, error) {
+
+// Data structure for a template.
+type Model struct {
+	Type 			string
+	Src 			string
+	Dest 			string
+	Filename		string
+	Placeholders	map[string]string
+}
+
+
+func GetTemplateByType(Cfg *Config, t string) (*Model, error) {
 
 	// Create the template data.
 	templateData := &Model{

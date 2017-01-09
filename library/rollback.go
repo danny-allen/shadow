@@ -1,18 +1,17 @@
-package rollback
+package library
 
 import (
-	"dao/shadow/config"
 	"os"
 	"fmt"
 )
 
-func Run(Cfg *config.Config) {
+func Rollback(Cfg *Config) {
 
 	// Check args for version.
 	if(len(os.Args) > 2) {
 
 		// Get the required version by the user.
-		requiredVersion := os.Args[2]
+		//requiredVersion := os.Args[2]
 
 		// If no arg, find version from last available.
 		version := Cfg.Version.GetLast()
@@ -23,13 +22,15 @@ func Run(Cfg *config.Config) {
 			// Tell the user it is!
 			fmt.Println("You are already on the latest version")
 		} else {
-
-			// If arg, try and find that version from update log.
-			if(Cfg.Version.FindByTag(requiredVersion)) {
-
-			} else {
-
-			}
+			//
+			//version := Cfg.Version.FindByTag(requiredVersion)
+			//
+			//// If arg, try and find that version from update log.
+			//if(version == nil) {
+			//
+			//} else {
+			//
+			//}
 		}
 
 	} else {

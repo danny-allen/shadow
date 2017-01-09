@@ -1,13 +1,12 @@
-package uninstall
+package library
 
 import (
-	"dao/shadow/config"
 	"os"
 	"fmt"
 	"github.com/danny-allen/go-interrogator"
 )
 
-func Run(Cfg *config.Config) {
+func Uninstall(Cfg *Config) {
 
 	// Check arguments.
 	if(!validArgs()) {
