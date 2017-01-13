@@ -53,7 +53,7 @@ func Setup() {
  */
 func MakeGlobal() {
 
-	// Set the global path.
+	// Set the global path.ins
 	Cfg.SetGlobalPath("/usr/local/shadow")
 
 	// Make the global directory.

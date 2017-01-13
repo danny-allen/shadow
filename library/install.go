@@ -20,7 +20,12 @@ var installOpts struct {
 
 	// Destination (-d, --destination).
 	Dest string `short:"d" long:"destination"  description:"The default destination directory for using the template."`
+
+	// Global installation (-g, --global).
+	Global bool `short:"g" long:"global"  description:"Install the template globally, instead of locally."`
 }
+
+var Args []string
 
 /**
  * Make sure the user has specified a template path.
@@ -28,14 +33,14 @@ var installOpts struct {
 func GetTemplatePath() string {
 
 	// Check for file/directory.
-	if(len(os.Args) < 3) {
+	if(len(Args) < 3) {
 
 		// User error, not enough args.
 		stop.Mistake("Shadow install must have a file or directory to work with.\nTry: shadow install [file/directory]")
 	}
 
 	// Get args.
-	return os.Args[2]
+	return Args[2]
 }
 
 
@@ -48,7 +53,7 @@ func GetTemplateType() string {
 	var templateType string
 
 	// Check for a name argument.
-	if(len(os.Args) < 4) {
+	if(len(Args) < 4) {
 
 		// Setup Q.
 		q := interrogator.NewQuestion("What is the type for your new template?")
@@ -62,7 +67,7 @@ func GetTemplateType() string {
 		// Set the response.
 		templateType = q.Response
 	} else {
-		templateType = os.Args[3]
+		templateType = Args[3]
 	}
 
 	// Check template type now exists!
@@ -73,10 +78,26 @@ func GetTemplateType() string {
 	return templateType
 }
 
+
 /**
  * Runs the install functionality attemping to install a template from a source.
  */
 func Install(Cfg *Config) {
+
+	// Get new args.
+
+	// shadow install -g template_path/templateName.st
+	// ask the for type (name->sass) to store in config
+
+
+	// Parse the args, returning the maintained order, without flags.
+	Args, err := flags.ParseArgs(&installOpts, os.Args)
+
+	// Examples...
+	fmt.Println(installOpts.Global) // true
+	fmt.Println(Args[2]) // Order maintained - "template_path/templateName.st"
+
+	os.Exit(1)
 
 	// Get params.
 	templatePath := GetTemplatePath()
@@ -86,8 +107,16 @@ func Install(Cfg *Config) {
 	exists, err := path.Exists(Cfg.CurrentPath + "/" + templatePath)
 
 	// Process template or catch error.
+	// TODO: Process the template as global if set in installOpts.Global
+	// TODO: reorganise this if statement, do the error check first and kill program if problem.
 	if(exists && err == nil) {
-		r, _ := processTemplate(templateType, Cfg.CurrentPath + "/" + templatePath)
+
+		targetPath := Cfg.CurrentPath + "/.shadow_templates"
+		if(installOpts.Global){
+
+		}
+
+		r, _ := os.Rename(Cfg.CurrentPath + "/" + templatePath, )
 
 		// If the templates was successfully moved.
 		if(r) {
@@ -126,12 +155,14 @@ func Install(Cfg *Config) {
 }
 
 /**
- * Process the template.
+ * store the template in .shadow_templates.
  */
-func processTemplate(templateType string, template string) (bool, error) {
+func storeTemplate(templateType string, templatePath string) (bool, error) {
 
-	fmt.Println("Processing template type " + templateType + " from: " + template)
+	fmt.Println("Processing template type " + templateType + " from: " + templatePath)
+	fmt.Println("Processing template type " + templateType + " from: " + templatePath)
 
+	// TODO: investigate template processing, perhaps handle bars is best?
 	// Read template.
 	// Swap placeholders.
 	// Copy the template to the new location.
