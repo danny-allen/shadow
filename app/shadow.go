@@ -4,6 +4,7 @@ import (
 	"os"
 	"fmt"
 	"dao/shadow/library"
+	"flag"
 )
 
 // Declare global config.
@@ -12,6 +13,7 @@ var Cfg *library.Config
 // Initial functionality and setup.
 func init() {
 
+	//TODO move this - we dont always use it. Add bootstrap func instead.
 	Cfg = library.Setup();
 }
 
@@ -24,25 +26,29 @@ var tag = "v0.0.1"
 // The main stuff!
 func main() {
 
-	// Check an argument exists.
+	// Get help if required.
+	setupFlags(flag.CommandLine)
+
+	// Check for help request.
 	if(len(os.Args) > 1 && os.Args != nil) {
 
 		// We have a command, lets see if it exists.
-		tryCommand()
+		tryCommand(os.Args[1])
 
 	} else {
 
-		// We dont have
-		fmt.Println("Shadow requires a command.")
+		// We dont have a command
+		fmt.Println("Shadow requires a command. Use --help to see the options.")
+		os.Exit(0)
 	}
 
 }
 
 // Run the command, if exists.
-func tryCommand() {
+func tryCommand(arg string) {
 
 	// Check for download param
-	switch os.Args[1] {
+	switch arg {
 
 		// Create a .shadow file.
 		case "init":
@@ -80,10 +86,36 @@ func tryCommand() {
 			break
 
 		default:
-			fmt.Println("Shadow command not found.")
+			fmt.Println("Shadow command not found. Use --help to see the options.")
 	}
 }
 
+
+// Setting up help option.
+func setupFlags(f *flag.FlagSet) {
+
+	// Define new help option.
+	f.Usage = func() {
+		helpTxt := `
+Shadow accepts these options:
+	- init 			Create a .shadow file.
+	- install 		Installs a template globally.
+	- uninstall		Uninstalls a global template.
+	- update 		Updates the shadow command to the latest available.
+	- rollback 		Reverts the shadow command to the previous version.
+	- create 		Creates a file from a shadow template.
+	- list 			Identifies the available templates you have.
+
+Example: shadow <command>
+
+`
+		// Output the help text
+		fmt.Print(helpTxt);
+	}
+
+	// Parse the flag.
+	flag.Parse()
+}
 
 /*
 	Name: shadow template generator
