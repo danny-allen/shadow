@@ -7,6 +7,7 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/danny-allen/go-interrogator"
 	"github.com/danny-allen/go-stop"
+	"path/filepath"
 )
 
 
@@ -28,15 +29,28 @@ var installOpts struct {
 var Args []string
 
 /**
- * Make sure the user has specified a template path.
+ * Make sure the user has specified a template path and that it exists.
  */
-func GetTemplatePath() string {
+func GetValidTemplatePath() string {
 
 	// Check for file/directory.
 	if(len(Args) < 3) {
 
 		// User error, not enough args.
 		stop.Mistake("Shadow install must have a file or directory to work with.\nTry: shadow install [file/directory]")
+	}
+
+	// Find existence of the template.
+	exists, err := path.Exists(Args[2])
+
+	// Catch error.
+	if(err != nil) {
+		stop.Mistake(err.Error())
+	}
+
+	// Check the file exists.
+	if(!exists) {
+		stop.Mistake(err.Error())
 	}
 
 	// Get args.
@@ -78,81 +92,81 @@ func GetTemplateType() string {
 	return templateType
 }
 
+func GetValidDestinationPath() string {
+
+	// Local path.
+	targetPath := Cfg.CurrentPath + "/.shadow_templates"
+
+	// Check config for global setup.
+	if(installOpts.Global){
+
+		// Reset to global!
+		targetPath = Cfg.GlobalPath + "/.shadow_templates"
+	}
+
+	// Find existence of the template.
+	exists, err := path.Exists(targetPath)
+
+	// Check the file exists.
+	if(!exists) {
+		stop.Mistake("This path does not exist: " + targetPath)
+	}
+
+	// Catch error.
+	if(err != nil) {
+		stop.Mistake(err.Error())
+	}
+
+	// Return the target path.
+	return targetPath
+}
+
 
 /**
- * Runs the install functionality attemping to install a template from a source.
+ * Runs the install functionality attempting to install a template from a source.
  */
 func Install(Cfg *Config) {
 
-	// Get new args.
-
-	// shadow install -g template_path/templateName.st
-	// ask the for type (name->sass) to store in config
-
+	// Declare error var.
+	var err error
 
 	// Parse the args, returning the maintained order, without flags.
-	Args, err := flags.ParseArgs(&installOpts, os.Args)
-
-	// Examples...
-	fmt.Println(installOpts.Global) // true
-	fmt.Println(Args[2]) // Order maintained - "template_path/templateName.st"
-
-	os.Exit(1)
+	Args, err = flags.ParseArgs(&installOpts, os.Args)
 
 	// Get params.
-	templatePath := GetTemplatePath()
+	templatePath := GetValidTemplatePath()
 	templateType := GetTemplateType()
+	filename := filepath.Base(templatePath)
+	destPath := GetValidDestinationPath()
 
-	// Find existence of the template file or directory exists.
-	exists, err := path.Exists(Cfg.CurrentPath + "/" + templatePath)
+	// Move the file (or rename it).
+	// TODO: Add support for copy.
+	err = os.Rename(Cfg.CurrentPath + "/" + templatePath, destPath + "/" + filename)
 
-	// Process template or catch error.
-	// TODO: Process the template as global if set in installOpts.Global
-	// TODO: reorganise this if statement, do the error check first and kill program if problem.
-	if(exists && err == nil) {
-
-		targetPath := Cfg.CurrentPath + "/.shadow_templates"
-		if(installOpts.Global){
-
-		}
-
-		r, _ := os.Rename(Cfg.CurrentPath + "/" + templatePath, )
-
-		// If the templates was successfully moved.
-		if(r) {
-
-			// Parse flags from os args.
-			_, err := flags.ParseArgs(&installOpts, os.Args)
-
-			// Check flags for errors.
-			if err != nil {
-				panic(err)
-				os.Exit(1)
-			}
-
-			// Create the template data
-			template := &Model{
-				Type: templateType,
-				Src: templatePath,
-			}
-
-			// Check for filename flag.
-			if(installOpts.Filename != "") {
-				template.Filename = installOpts.Filename
-			}
-
-			// Check for dest flag.
-			if(installOpts.Dest != "") {
-				template.Dest = installOpts.Dest
-			}
-
-			// Add to the shadow file.
-			AddToShadowFile(Cfg, template);
-		}
-	} else {
-		fmt.Println(err.Error());
+	// Catch error.
+	if(err != nil) {
+		stop.Mistake(err.Error())
 	}
+
+	// Create the template data
+	templateData := NewTemplateData()
+	templateData.Type = templateType
+	templateData.Src = templatePath
+
+	// Check for filename flag.
+	if(installOpts.Filename != "") {
+		templateData.Filename = installOpts.Filename
+	}
+
+	// Check for dest flag.
+	if(installOpts.Dest != "") {
+		templateData.Dest = installOpts.Dest
+	}
+
+	// Add to the shadow file.
+	AddToShadowFile(Cfg, templateData);
 }
+
 
 /**
  * store the template in .shadow_templates.
@@ -183,37 +197,42 @@ func storeTemplate(templateType string, templatePath string) (bool, error) {
 /**
  * Add the template data to the shadow file.
  */
-func AddToShadowFile(Cfg *Config, templateData *Model) {
+func AddToShadowFile(Cfg *Config, templateData *TemplateData) {
 
 	// Find section.
 	section, _ := Cfg.ShadowFile.GetSection(templateData.Type)
 
 	// Check for section.t
-	if(section == nil) {
-
-		// Create new section.
-		section, _ := Cfg.ShadowFile.NewSection(templateData.Type)
-
-		// Populate the section.
-		section.NewKey("src", templateData.Src)
-
-		// Check destination exists.
-		if(templateData.Dest != "") {
-			section.NewKey("dest", templateData.Dest)
-		}
-
-		// Check filename exists.
-		if(templateData.Filename != "") {
-			section.NewKey("filename", templateData.Filename)
-		}
-
-		// Save the file.
-		Cfg.ShadowFile.SaveTo(".shadow")
-
-	} else {
+	if(section != nil) {
 
 		// Section already exists.
 		stop.Mistake(templateData.Type + " already exists in your shadow file.")
 	}
 
+	// Create new section.
+	section, _ = Cfg.ShadowFile.NewSection(templateData.Type)
+
+	// Populate the section.
+	section.NewKey("src", templateData.Src)
+
+	// Check destination exists.
+	if(templateData.Dest != "") {
+		section.NewKey("dest", templateData.Dest)
+	}
+
+	// Check filename exists.
+	if(templateData.Filename != "") {
+		section.NewKey("filename", templateData.Filename)
+	}
+
+	// The destination for saving.
+	dest := ".shadow"
+
+	// Check config for global setup.
+	if(installOpts.Global){
+		dest = Cfg.GlobalPath + "/.shadow"
+	}
+
+	// Save the file.
+	Cfg.ShadowFile.SaveTo(dest)
 }

@@ -28,7 +28,7 @@ var shadowFile *ini.File
 /**
  * Setup configs.
  */
-func Setup() {
+func Setup() *Config {
 	/*
 		Does it have to be installed globally? no
 		Can you install files for global use, regardless of where the binary is installed? yes
@@ -41,6 +41,8 @@ func Setup() {
 
 	// Get the shadow file.
 	Cfg.ShadowFile = GetShadowFile()
+
+	return Cfg
 
 	// Make the global config.
 	//MakeGlobal()

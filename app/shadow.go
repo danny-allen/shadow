@@ -12,7 +12,7 @@ var Cfg *library.Config
 // Initial functionality and setup.
 func init() {
 
-	library.Setup();
+	Cfg = library.Setup();
 }
 
 var tag = "v0.0.1"
@@ -24,13 +24,8 @@ var tag = "v0.0.1"
 // The main stuff!
 func main() {
 
-	fmt.Println("got here")
-
-
 	// Check an argument exists.
 	if(len(os.Args) > 1 && os.Args != nil) {
-
-		fmt.Println("got here")
 
 		// We have a command, lets see if it exists.
 		tryCommand()

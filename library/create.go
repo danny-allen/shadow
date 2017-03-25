@@ -31,7 +31,6 @@ func Create(Cfg *Config) {
 		os.Exit(1)
 	}
 
-
 	_, err = GetTemplateByType(Cfg, os.Args[2])
 
 	// If no section found.
