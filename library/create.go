@@ -33,6 +33,123 @@ func Create(Cfg *Config) {
 
 	_, err = GetTemplateByType(Cfg, os.Args[2])
 
+
+
+
+
+	//
+	//
+	//// Create the template data.
+	//templateData := &st.Model{
+	//	Type: os.Args[2],
+	//}
+	//
+	//// Load config to template data.
+	//err = Cfg.ShadowFile.Section(templateData.Type).MapTo(templateData)
+	//
+	//
+	//// Find section.
+	////section, err := Cfg.ShadowFile.GetSection(templateData.Type)
+	//
+	//// Check flags for errors.
+	//if err != nil {
+	//	panic(err)
+	//	os.Exit(1)
+	//}
+	//
+	//
+	//// Parse the template.
+	//t, err := template.New(templateData.Type).Parse(templateData.Filename)
+	//
+	//// Template Values - For All!
+	//val := map[string] interface{} {
+	//	"Name": createOpts.Name,
+	//}
+	//
+	//var tpl bytes.Buffer
+	//
+	//fmt.Println(t)
+	//
+	//// Execute.
+	//err = t.Execute(&tpl, val)
+	//
+	//// Check flags for errors.
+	//if err != nil {
+	//	panic(err)
+	//	os.Exit(1)
+	//}
+	//
+	//
+	//
+	//result := tpl.String()
+	//
+	//
+	//templateData.Filename = result
+	//
+	//
+	//// If no section found.
+	//if(err != nil) {
+	//
+	//	// Show the user what is available.
+	//	list.Run(Cfg)
+	//
+	//} else {
+	//
+	//	// Make the file from template.
+	//	fmt.Println("Creating " + os.Args[2] + " template " + createOpts.Name + "...")
+	//
+	//	//fmt.Println(templateData)
+	//
+	//	// Save the new file.
+	//	//fmt.Println("Saving to " + section.Key("dest").String() + ".")
+	//
+	//
+	//	// Tell the user whats going on.
+	//	fmt.Println("Adding in some files you may find useful...");
+	//
+	//	// Template Values - For All!
+	//	values := map[string] interface{} {
+	//		"Name": createOpts.Name,
+	//	}
+	//
+	//	// Parse the template.
+	//	t, err := template.ParseFiles(templateData.Src)
+	//
+	//	// Check flags for errors.
+	//	if err != nil {
+	//		panic(err)
+	//		os.Exit(1)
+	//	}
+	//
+	//	// Create output path.
+	//	file, err := os.Create(".tmp/dest/" + templateData.Dest + "/" + templateData.Filename)
+	//
+	//	fmt.Println(file)
+	//
+	//	// Check flags for errors.
+	//	if err != nil {
+	//		panic(err)
+	//		os.Exit(1)
+	//	}
+	//
+	//	// Execute.
+	//	err = t.Execute(file, values)
+	//
+	//	// Check flags for errors.
+	//	if err != nil {
+	//		panic(err)
+	//		os.Exit(1)
+	//	}
+	//
+	//	// Base files all sorted, let them know.
+	//	fmt.Println("Done.");
+	//}
+
+
+
+
+
+
 	// If no section found.
 	if(err != nil) {
 
