@@ -17,7 +17,7 @@ func init() {
 	Cfg = library.Setup();
 }
 
-var tag = "v0.0.1"
+//var tag = "v0.0.1"
 
 
 //go build -i -v -ldflags="-X main.version=$(git describe --tags)" shadow.go

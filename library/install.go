@@ -11,22 +11,67 @@ import (
 )
 
 
+var Args []string
+
+var templatePath string
+
 /**
  * Install options available for command line.
  */
 var installOpts struct {
 
+	// Type (-t, --type).
+	Type 		string 	`short:"t" long:"type" description:"The name you use to create new instances of the template"`
+
 	// Filename (-f, --filename).
-	Filename string `short:"f" long:"filename" description:"The filename template."`
+	Filename 	string 	`short:"f" long:"filename" description:"The filename template."`
 
 	// Destination (-d, --destination).
-	Dest string `short:"d" long:"destination"  description:"The default destination directory for using the template."`
+	Dest 		string 	`short:"d" long:"destination"  description:"When you install instances of this template, what will the relative path be?"`
 
-	// Global installation (-g, --global).
-	Global bool `short:"g" long:"global"  description:"Install the template globally, instead of locally."`
+	// Global install (-g, --global).
+	Global 		bool 	`short:"g" long:"global"  description:"Install the template globally, instead of locally."`
 }
 
-var Args []string
+
+/**
+ * Runs the install functionality attempting to install a template from a source.
+ */
+func Install(Cfg *Config) {
+
+	// Declare error var.
+	var err error
+
+	// Parse the args, returning the maintained order, without flags.
+	Args, err = flags.ParseArgs(&installOpts, os.Args)
+
+	// Get params.
+	GetValidTemplatePath()
+	GetTemplateType()
+	GetFilename();
+	GetDest()
+
+	// Get the template path absolute dir.
+	absPath, _ := filepath.Rel(templatePath)
+
+	// Copy the file to templates dir.
+	err = path.CopyFile(absPath, installOpts.Dest + "/" + filepath.Base(templatePath))
+
+	// Catch error.
+	if(err != nil) {
+		stop.Mistake(err.Error())
+	}
+
+	// Create the template data
+	templateData := NewTemplateData()
+	templateData.Type = installOpts.Type
+	templateData.Src = templatePath
+	templateData.Filename = installOpts.Filename
+	templateData.Dest = installOpts.Dest
+
+	// Add to the shadow file.
+	AddToShadowFile(Cfg, templateData);
+}
 
 /**
  * Make sure the user has specified a template path and that it exists.
@@ -53,8 +98,11 @@ func GetValidTemplatePath() string {
 		stop.Mistake(err.Error())
 	}
 
-	// Get args.
-	return Args[2]
+	// Set the template path to the index 2 arg.
+	templatePath = Args[2]
+
+	// Return the template path.
+	return templatePath
 }
 
 
@@ -63,14 +111,11 @@ func GetValidTemplatePath() string {
  */
 func GetTemplateType() string {
 
-	// Declare template type as a string.
-	var templateType string
-
 	// Check for a name argument.
-	if(len(Args) < 4) {
+	if(installOpts.Type == "") {
 
 		// Setup Q.
-		q := interrogator.NewQuestion("What is the type for your new template?")
+		q := interrogator.NewQuestion("What is the type for your new template? This is the name you will use when creating new instances.")
 
 		// Make it open.
 		q.Open = true
@@ -79,20 +124,19 @@ func GetTemplateType() string {
 		q.Ask()
 
 		// Set the response.
-		templateType = q.Response
-	} else {
-		templateType = Args[3]
+		installOpts.Type = q.Response
 	}
 
 	// Check template type now exists!
-	if(templateType == "") {
+	if(installOpts.Type == "") {
 		stop.Mistake("You must declare the type, it cannot be blank.\nAborting.")
 	}
 
-	return templateType
+	return installOpts.Type
 }
 
-func GetValidDestinationPath() string {
+
+func GetDest() string {
 
 	// Local path.
 	targetPath := Cfg.CurrentPath + "/.shadow_templates"
@@ -117,54 +161,41 @@ func GetValidDestinationPath() string {
 		stop.Mistake(err.Error())
 	}
 
+	// If it hasnt been set... set it.
+	if(installOpts.Dest == "") {
+		installOpts.Dest = targetPath
+	}
+
 	// Return the target path.
-	return targetPath
+	return installOpts.Dest
 }
 
+func GetFilename() string {
 
-/**
- * Runs the install functionality attempting to install a template from a source.
- */
-func Install(Cfg *Config) {
+	// Check for a filename.
+	if(installOpts.Filename == "") {
 
-	// Declare error var.
-	var err error
+		// Setup Q.
+		q := interrogator.NewQuestion("Specify a filename pattern? (Default: {{.name}}.st)")
 
-	// Parse the args, returning the maintained order, without flags.
-	Args, err = flags.ParseArgs(&installOpts, os.Args)
+		// Make it open.
+		q.Open = true
 
-	// Get params.
-	templatePath := GetValidTemplatePath()
-	templateType := GetTemplateType()
-	filename := filepath.Base(templatePath)
-	destPath := GetValidDestinationPath()
+		// Ask the Q.
+		q.Ask()
 
-	// Move the file (or rename it).
-	// TODO: Add support for copy.
-	err = os.Rename(Cfg.CurrentPath + "/" + templatePath, destPath + "/" + filename)
-
-	// Catch error.
-	if(err != nil) {
-		stop.Mistake(err.Error())
+		// Set the response.
+		installOpts.Filename = q.Response
 	}
 
-	// Create the template data
-	templateData := NewTemplateData()
-	templateData.Type = templateType
-	templateData.Src = templatePath
-
-	// Check for filename flag.
-	if(installOpts.Filename != "") {
-		templateData.Filename = installOpts.Filename
+	// Check template type now exists!
+	if(installOpts.Filename == "") {
+		stop.Mistake("You must declare a filename, it cannot be blank.\nAborting.")
 	}
 
-	// Check for dest flag.
-	if(installOpts.Dest != "") {
-		templateData.Dest = installOpts.Dest
-	}
+	// Return the filename.
+	return installOpts.Filename
 
-	// Add to the shadow file.
-	AddToShadowFile(Cfg, templateData);
 }
 
 

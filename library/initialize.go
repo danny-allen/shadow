@@ -26,6 +26,8 @@ func Initialize(Cfg *Config) {
 		// Create the shadow file.
 		_, err := os.Create(".shadow")
 
+		//TODO: Make the .shadow_templates dir
+
 		// Check the file was created.
 		if(err != nil) {
 
